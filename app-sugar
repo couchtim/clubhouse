@@ -1,0 +1,34 @@
+#! /usr/bin/env node
+
+var util = require('./util');
+var sys = require('sys');
+
+var progName = process.argv.shift() + ' ' + process.argv.shift().replace('^.*/', '');
+
+function usage() {
+    sys.puts('Usage: ' + progName + ' APPFILE');
+    process.exit(1);
+}
+
+var appPath = process.argv.shift() || usage();
+appPath = util.normalizeModulePath(appPath);
+
+var app = require(appPath);
+
+function updateDoc(uri, doc) {
+    // First look up the document's revision
+    util.jsonRequest({uri: uri, method: 'GET', expect: [200, 404]}, function (err, resp, body) {
+        if (err) throw err;
+        if (body._rev) doc._rev = body._rev;
+
+        // Now update the document
+        util.jsonRequest({uri: uri, method: 'PUT', body: doc}, function (err, resp, body) {
+            if (err) throw err;
+            sys.debug('SUCCESS: ' + sys.inspect(body));
+        });
+    });
+}
+
+updateDoc(app.dbUri + '/' + app.ddoc._id, app.ddoc);
+
+// vim:set sw=4 et ft=javascript:

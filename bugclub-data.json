@@ -1,0 +1,9 @@
+{
+  "docs": [
+      { "name": "Cornfield Ant", "club": "Hymenoptera" },
+      { "name": "Diving Beetle", "club": "Coleoptera" },
+      { "name": "Bumble Bee", "club": "Hymenoptera" },
+      { "name": "Japanese Beetle", "club": "Coleoptera" },
+      { "name": "Cicada", "club": "Homoptera" },
+    ]
+}

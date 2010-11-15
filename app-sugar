@@ -1,0 +1,60 @@
+#! /usr/bin/env node
+
+/*
+    Bare-bones app to make it easy to update a CouchApp.
+
+    Copyright 2010 by Tim Smith <tim@couchone.com>
+    Released under the BSD license; see ./LICENSE.markdown
+*/
+
+// To keep this as uncluttered as possible, a number of things are hard-coded
+// into this application. It can be extended in a lot of ways, with a bit of
+// node.js fun.
+var appPath = './clubhouse';
+var dbUri = 'http://tim:topSecret@couchtim.couchone.com/bugclub';
+
+// Non-default modules, available from, among other places,
+// NPM, a Node Package Manager: http://howtonode.org/introduction-to-npm
+var step = require('step');
+
+// Default node.js modules
+var assert = require('assert');
+var sys = require('sys');
+var util = require('./util');
+
+
+var app = require(appPath);
+var ddocUri = dbUri + '/' + app.ddoc._id;
+//sys.debug(sys.inspect(app.ddoc));
+
+step(
+    function getCurrentDdoc() {
+        util.jsonRequest({ uri: ddocUri, expect: [200, 404] }, this);
+    },
+
+    function putAppDdoc(err, resp, body) {
+        assert.ifError(err);
+
+        if (body._rev) {
+            app.ddoc._rev = body._rev;
+        }
+        else {
+            // Warn about this, in case it was a typo
+            sys.debug('NOTICE: Starting a new design doc at "' + ddocUri + '"');
+        }
+
+        util.jsonRequest({
+            uri: ddocUri,
+            method: 'PUT',
+            body: app.ddoc
+        }, this);
+    },
+
+    function finish(err, resp, body) {
+        assert.ifError(err);
+        util.log(JSON.stringify({ ok: true, rev: body.rev }));
+        process.exit(0);
+    }
+);
+
+// vim:et:sts=4:sw=4:ft=javascript:

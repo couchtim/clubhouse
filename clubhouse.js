@@ -15,9 +15,9 @@ var ddoc = {
                 send('<html><head><title>bugs</title></head><body>');
                 var row;
                 while (row = getRow()) {
-                    send('<p>' + row.key[0] + ', ' + row.key[1] + '</p>\\n');
+                    send('<p>' + row.key[0] + ', ' + row.key[1] + '</p>\n');
                 }
-                return '</body></html>\\n';
+                return '</body></html>\n';
             });
         }
     }

@@ -28,11 +28,12 @@ var util = require('./util');
 
 var app = require(appPath);
 var ddocUri = dbUri + '/' + app.ddoc._id;
-var appBase = path.dirname(appPath);
 
 
 function loadAppAttachments(ddoc) {
-    var sourceDir = path.join(appBase, 'attachments');
+    // Add all files from the 'attachments' directory that is in
+    // the same directory as the application definition
+    var sourceDir = path.join(path.dirname(appPath), 'attachments');
     util.setDefault(ddoc, { '_attachments': {} });
     util.findFilesSync(sourceDir).forEach(function (f) {
         var contents = fs.readFileSync(path.join(sourceDir, f), 'base64');

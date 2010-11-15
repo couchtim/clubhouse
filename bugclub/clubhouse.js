@@ -13,7 +13,7 @@ var ddoc = {
         basic: function (head, req) {
             provides('html', function () {
                 send('<html><head>\n<title>bugs</title>\n');
-                send('<link rel="stylesheet" type="text/css" media="all" href="../../default.css">\n');
+                send('<link rel="stylesheet" type="text/css" media="all" href="../../css/default.css">\n');
                 send('</head><body>\n');
                 var row;
                 while (row = getRow()) {

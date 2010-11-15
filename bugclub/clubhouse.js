@@ -12,7 +12,9 @@ var ddoc = {
     lists: {
         basic: function (head, req) {
             provides('html', function () {
-                send('<html><head><title>bugs</title></head><body>');
+                send('<html><head>\n<title>bugs</title>\n');
+                send('<link rel="stylesheet" type="text/css" media="all" href="../../default.css">\n');
+                send('</head><body>\n');
                 var row;
                 while (row = getRow()) {
                     send('<p>' + row.key[0] + ', ' + row.key[1] + '</p>\n');

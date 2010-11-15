@@ -10,6 +10,8 @@
 var request = require('request');
 
 // Default node.js modules
+var fs = require('fs');
+var path = require('path');
 var sys = require('sys');
 var url = require('url');
 
@@ -124,3 +126,29 @@ var jsonRequest = exports.jsonRequest = (function () {
         });
     };
 })();
+
+var findFilesSync = exports.findFilesSync = function findFilesSync(top) {
+    var result = [];
+    if (top === undefined) { return result; }
+
+    function walk(rel) {
+        var relPath = path.join.apply(rel, rel);
+        var fullPath = path.join(top, relPath);
+        var stats = fs.statSync(fullPath);
+
+        if (stats.isDirectory()) {
+            fs.readdirSync(fullPath).forEach(function (f) {
+                if (f[0] !== '.') {
+                    walk(rel.concat(f));
+                }
+            });
+        }
+        else if (stats.isFile()) {
+            result.push(relPath);
+        }
+    }
+
+    walk([]);
+    //sys.debug(sys.inspect(result));
+    return result;
+};

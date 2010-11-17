@@ -134,7 +134,17 @@ var findFilesSync = exports.findFilesSync = function findFilesSync(top) {
     function walk(rel) {
         var relPath = path.join.apply(rel, rel);
         var fullPath = path.join(top, relPath);
-        var stats = fs.statSync(fullPath);
+        try {
+            var stats = fs.statSync(fullPath);
+        }
+        catch (e) {
+            if (e.errno && e.errno === 2) {
+                // No such file; just skip it
+                return;
+            }
+
+            throw e;
+        }
 
         if (stats.isDirectory()) {
             fs.readdirSync(fullPath).forEach(function (f) {

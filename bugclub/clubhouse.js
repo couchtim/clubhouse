@@ -12,14 +12,15 @@ var ddoc = {
     lists: {
         basic: function (head, req) {
             provides('html', function () {
-                send('<html><head>\n<title>bugs</title>\n');
-                send('<link rel="stylesheet" type="text/css" media="all" href="../../css/default.css">\n');
-                send('</head><body>\n');
+                var to_html = require('modules/mustache').to_html;
+                members = [];
+
                 var row;
                 while (row = getRow()) {
-                    send('<p>' + row.key[0] + ', ' + row.key[1] + '</p>\n');
+                    members.push({club: row.key[0], name: row.key[1]});
                 }
-                return '</body></html>\n';
+
+                return to_html(this.templates['roster.mustache'], { members: members });
             });
         }
     }

@@ -30,22 +30,53 @@ var app = require(appPath);
 var ddocUri = dbUri + '/' + app.ddoc._id;
 
 
-function loadAppAttachments(ddoc) {
-    // Add all files from the 'attachments' directory that is in
+function loadDirectory(dir, storeFunc) {
+    // Read all files from the directory DIR that is in
     // the same directory as the application definition
-    var sourceDir = path.join(path.dirname(appPath), 'attachments');
-    util.setDefault(ddoc, { '_attachments': {} });
+    var sourceDir = path.join(path.dirname(appPath), dir);
     util.findFilesSync(sourceDir).forEach(function (f) {
-        var contents = fs.readFileSync(path.join(sourceDir, f), 'base64');
-        util.log('Attaching ' + f);
+        var contents = fs.readFileSync(path.join(sourceDir, f));
+        storeFunc(f, contents);
+        util.log('Loaded ' + path.join(dir, f));
+    });
+}
+
+function loadAppAttachments(ddoc) {
+    util.setDefault(ddoc, { '_attachments': {} });
+    loadDirectory('attachments', function (f, contents) {
         ddoc._attachments[f] = {
             content_type: mime.lookup(f),
-            data: contents
+            data: contents.toString('base64')
         };
     });
 }
 
+function loadAppFiles(ddoc, dir, stripJsExtension) {
+    loadDirectory(dir, function (f, contents) {
+        var obj = ddoc;
+        var term;
+
+        // CouchDB expects modules without the '.js' extension
+        if (stripJsExtension) { f = f.replace(/\.[^\.]*/, ''); }
+
+        // Convert nested directories into nested objects; e.g.
+        // templates/foo/bar.txt => ddoc.templates.foo['bar.txt']
+        f = [dir].concat(f.split('/'));
+        //sys.debug(sys.inspect(f));
+        while (f.length > 1) {
+            term = f.shift();
+            if (!obj[term]) { obj[term] = {}; }
+            obj = obj[term];
+        }
+
+        term = f.shift();
+        obj[term] = contents.toString('utf8');
+    });
+}
+
 loadAppAttachments(app.ddoc);
+loadAppFiles(app.ddoc, 'modules', true);
+loadAppFiles(app.ddoc, 'templates', false);
 //sys.debug(sys.inspect(app.ddoc));
 
 step(

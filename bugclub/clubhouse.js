@@ -11,16 +11,17 @@ var ddoc = {
 
     lists: {
         basic: function (head, req) {
+            var that = this;
             provides('html', function () {
                 var to_html = require('modules/mustache').to_html;
-                members = [];
+                var members = [];
 
                 var row;
                 while (row = getRow()) {
                     members.push({club: row.key[0], name: row.key[1]});
                 }
 
-                return to_html(this.templates['roster.mustache'], { members: members });
+                return to_html(that.templates['roster.mustache'], { members: members });
             });
         }
     }

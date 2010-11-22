@@ -7,7 +7,7 @@
     Released under the BSD license; see ./LICENSE.markdown
 */
 
-// To keep this as uncluttered as possible, a number of things are hard-coded
+// To keep this as uncluttered as possible, several things are hard-coded
 // into this application. It can be extended in a lot of ways, with a bit of
 // node.js fun.
 var appPath = './bugclub/clubhouse';
@@ -23,6 +23,8 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var sys = require('sys');
+
+// Local modules
 var util = require('./util');
 
 
